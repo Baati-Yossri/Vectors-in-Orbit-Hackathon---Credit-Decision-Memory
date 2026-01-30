@@ -4,7 +4,8 @@
 
 **Team:** Weavers  
 **Hackathon Use Case:** Credit Decision Memory (Use Case 3)
-
+🚀 **Live Demo (Streamlit App):**  
+👉 https://credit-decision-memory-system.streamlit.app/
 ---
 
 ## 1. Project Overview
