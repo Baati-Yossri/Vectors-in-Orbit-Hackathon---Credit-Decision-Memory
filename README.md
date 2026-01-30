@@ -1,118 +1,288 @@
-# 🧠 Credit Decision Memory  
-**Similarity-Driven Risk & Anomaly Detection using Qdrant**
+🏦 Credit Decision Memory
 
-## 📌 Project Overview
-This project implements **Use Case 3: Credit Decision Memory** — a decision-support system that assists bankers in evaluating loan applications by retrieving and analyzing similar historical cases instead of relying solely on black-box scoring models.
+Similarity-Driven Risk & Anomaly Detection using Qdrant
 
-The system is **memory-based**, explainable, and designed for human-in-the-loop decisioning.
+Team: Weavers
+Hackathon Use Case: Credit Decision Memory (Use Case 3)
 
----
+1. Project Overview
 
-## 🎯 Problem Statement
-Credit decisioning requires speed, accuracy, and audit-ready explanations.  
-Traditional approaches often recompute risk from scratch and produce opaque scores without historical context.
+Credit Decision Memory is a similarity-based decision support system designed to assist loan underwriters by leveraging historical loan outcomes rather than opaque predictive models.
 
-Additionally, real-world credit datasets suffer from:
-- Outcome imbalance
-- Right-censoring (many loans are too recent to have known outcomes)
+Instead of automatically approving or rejecting a loan, the system:
 
----
+Retrieves historically similar loan cases
 
-## 💡 Solution Concept
-We built a **decision memory engine** that:
-1. Converts loan applications into numerical vectors
-2. Stores them in **Qdrant**
-3. Retrieves similar historical loan cases
-4. Analyzes their outcomes (repaid, defaulted, fraud)
-5. Produces explainable, evidence-based recommendations
+Surfaces their real observed outcomes (Repaid, Defaulted, In Progress, Fraud)
 
-The system **does not auto-approve or reject loans**.
+Provides explainable, evidence-based insights to human decision-makers
 
----
+This approach prioritizes:
 
-## 🏗️ Architecture
-Loan Dataset → Vectorization → Qdrant Vector Store → Similarity Search → Explainable Decision Support
+Transparency
 
----
+Auditability
 
-## 📂 Dataset
-The dataset includes:
-- Applicant financial profile
-- Loan details (amount, tenure, purpose)
-- Credit indicators
-- Fraud signals
-- Application dates
+Human-in-the-loop decisioning
 
----
+2. Problem Statement
 
-## ⚠️ Key Challenge: Outcome Imbalance
-Initial analysis showed:
-- ~78% Defaulted
-- ~3% Repaid
+Traditional credit decisioning systems often rely on:
 
-This caused unintuitive similarity results.
+Black-box scoring models
 
----
+Over-recomputation of risk
 
-## 🔍 Root Cause Identified
-Most loans were requested in **2023–2025**, meaning many were still ongoing.
-This is known as **right-censoring** in credit risk.
+Limited explainability for auditors and regulators
 
----
+Additionally, real-world loan datasets suffer from:
 
-## ✅ Final Fix: Synthetic Time Shifting
-To simulate mature loan lifecycles:
-- Application dates were shifted **36 months into the past**
-- Loan age was recomputed
-- Outcomes were recalculated using lifecycle-aware logic
+Outcome imbalance
 
-### Outcome Logic
-- **Repaid**: loan age ≥ tenure, no fraud, no default
-- **Defaulted**: fraud or early default
-- **In_Progress**: ongoing loans
+Temporal censoring (many loans are still ongoing)
 
----
+These issues reduce trust and decision quality.
 
-## 🧠 Why This Matters
-This shows that:
-- Memory-based systems depend on outcome quality
-- Time-awareness is critical in credit decisioning
-- Similarity search provides explainability, not blind automation
+3. Solution Vision
 
----
+We implement a Decision Memory Engine that:
 
-## 🧪 Tech Stack
-- Python
-- Pandas / NumPy
-- Scikit-learn
-- Qdrant
-- Joblib
+Stores historical loan applications as vectors
 
----
+Uses similarity search to retrieve comparable past cases
 
-## ▶️ How to Run
-```bash
-python synthetic_time_shift.py
-python vectorizing.py
-python qdrant_ingest.py
-python query_qdrant.py
-```
+Explains decisions using actual outcomes, not predictions
 
----
+The system acts as a memory layer rather than a classifier.
 
-## 📊 Output
-- Similar historical loans
-- Outcomes & fraud signals
-- Banker-friendly explanations
+4. Default Demo Scenarios (Important for Evaluation)
+✅ Default Case on Application Load (Good Case)
 
----
+When the application is opened, the UI is intentionally pre-filled with a low-risk loan profile.
 
-## 🧾 Key Takeaway
-**This project focuses on explainable decision memory, not prediction.**
+This design choice allows evaluators to immediately observe a healthy similarity-based outcome without manual configuration.
 
----
+Typical characteristics:
 
-## 🚀 Future Work
-- Multimodal document embeddings
-- Survival-analysis-aware similarity
-- Portfolio-level risk analysis
+Stable income
+
+Low debt-to-income ratio
+
+Strong credit score
+
+Reasonable loan amount and tenure
+
+Salaried employment
+
+Owned property
+
+Practical loan purpose
+
+Expected behavior:
+
+Majority of Repaid historical cases
+
+Minimal or no fraud signals
+
+Low Risk (Similarity-Based) assessment
+
+This demonstrates normal system behavior under healthy conditions.
+
+❌ Testing a High-Risk / Adverse Case (Manual Input)
+
+To stress-test the system, evaluators can manually input the following example:
+
+Attribute	Value
+Monthly Income	$1,000
+Existing Monthly EMIs	$1,200
+Debt-to-Income Ratio	1.20
+Loan Amount Requested	$10,000
+Loan Tenure (Months)	24
+Credit Score	760
+Applicant Age	59
+Number of Dependents	1
+Employment Status	Self-Employed
+Property Ownership	Mortgaged
+Loan Type	Auto Loan
+Purpose of Loan	Business
+Why this is high-risk:
+
+Debt obligations exceed income
+
+High financial stress (DTI > 1)
+
+Business loan with uncertain cash flows
+
+Older applicant with reduced flexibility
+
+Mortgaged property increases exposure
+
+Expected system behavior:
+
+Higher proportion of Defaulted / In-Progress cases
+
+Possible fraud signals
+
+High Risk (Similarity-Based) assessment
+
+This contrast highlights the system’s reasoning capability.
+
+5. System Architecture
+User Input (UI)
+     ↓
+Feature Preprocessing
+(Standardization + Encoding)
+     ↓
+Vector Representation
+     ↓
+Qdrant Vector Database
+     ↓
+Similarity Search (Top-K)
+     ↓
+Outcome Aggregation
+     ↓
+Explainable Decision Summary
+     ↓
+PDF Decision Report
+
+6. Qdrant Integration (Core Component)
+
+Qdrant is used as a decision memory, not a prediction engine.
+
+How it works:
+
+Each historical loan is vectorized using:
+
+Financial indicators
+
+Loan parameters
+
+Applicant attributes
+
+Vectors are stored in Qdrant along with metadata:
+
+Loan outcome
+
+Fraud flag
+
+Loan type and purpose
+
+New applications are vectorized using the same pipeline
+
+Qdrant retrieves the Top-K most similar cases
+
+Outcomes are aggregated and explained
+
+Similarity metrics are configured at collection level (e.g. cosine similarity).
+
+7. Data Pipeline
+Data Preparation
+
+Structured loan application data
+
+Numerical + categorical features selected
+
+Sensitive identifiers excluded or masked
+
+Temporal Adjustment
+
+Most loans were recent and still ongoing.
+To reduce outcome bias:
+
+Application dates were synthetically shifted backward
+
+Loan maturity was recalculated
+
+Outcomes re-derived accordingly
+
+Vectorization
+
+Numerical features: StandardScaler
+
+Categorical features: One-Hot Encoding
+
+Resulting vectors stored in Qdrant
+
+8. Technologies Used
+Technology	Version
+Python	3.10
+Streamlit	latest
+Qdrant Client	1.7.3
+Scikit-learn	1.6.1
+Pandas	3.0.0
+NumPy	2.4.1
+Plotly	latest
+ReportLab	latest
+
+(Exact versions listed in requirements.txt)
+
+9. Setup & Installation
+Prerequisites
+
+Python 3.10+
+
+Qdrant Cloud account or local Qdrant instance
+
+Installation
+pip install -r requirements.txt
+
+Environment Variables
+
+Create a .env file:
+
+QDRANT_URL=your_qdrant_url
+QDRANT_API_KEY=your_api_key
+
+Run the App
+streamlit run src/ui_app.py
+
+10. Usage Example
+
+Launch the Streamlit UI
+
+Review the default (low-risk) loan case
+
+Click Analyze Loan Case
+
+Observe:
+
+Similarity-based risk assessment
+
+Outcome distribution
+
+Comparable historical cases
+
+Generate a bank-grade PDF decision report
+
+Optionally input the documented high-risk case to compare behavior
+
+11. Key Design Principles
+
+Similarity over prediction
+
+Explainability by design
+
+Human-in-the-loop
+
+Audit-ready outputs
+
+Clear risk contrast
+
+Safety-first reasoning
+
+12. Future Enhancements
+
+Multimodal document embeddings (IDs, statements)
+
+Feature weighting per loan type
+
+Survival-analysis-aware similarity
+
+Portfolio-level risk analytics
+
+Governance & fairness monitoring
+
+13. Conclusion
+
+Credit Decision Memory demonstrates how vector similarity and operational memory can support transparent, defensible, and regulator-friendly credit decisioning.
+By prioritizing historical evidence over black-box prediction, the system enhances trust while preserving human judgment.
