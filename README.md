@@ -7,7 +7,7 @@
 
 > ⚠️ **Important note for reviewers:**  
 > We strongly recommend using the live demo link below rather than recreating the application locally.  
-> For security reasons, the Qdrant API key and URL are not included in this repository, and a local setup requires configuring a Qdrant cluster, creating the necessary collection, **and ingesting historical data**, which can take additional time.
+> For security reasons, the Qdrant API key and URL are not included in this repository, and a local setup requires configuring a Qdrant cluster, creating the necessary collection, **and ingesting historical data through the qdrant_ingest.py file**, which can take additional time.
 
 
 🚀 **Live Demo (Streamlit App):**  
