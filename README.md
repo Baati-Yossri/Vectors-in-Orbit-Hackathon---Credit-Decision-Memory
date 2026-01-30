@@ -4,7 +4,6 @@
 
 **Team:** Weavers  
 **Hackathon Use Case:** Credit Decision Memory (Use Case 3)
-# 🏦 Credit Decision Memory
 
 > ⚠️ **Important note for reviewers:**  
 > We strongly recommend using the live demo link below rather than recreating the application locally.  
