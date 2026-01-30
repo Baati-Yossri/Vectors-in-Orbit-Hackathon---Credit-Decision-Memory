@@ -3,10 +3,9 @@ import pandas as pd
 import plotly.express as px
 from similarity_engine import find_similar_loans
 from reporting import DecisionReportGenerator
-import os
 
 # ===============================
-# SESSION STATE INITIALIZATION
+# SESSION STATE
 # ===============================
 if "analysis_result" not in st.session_state:
     st.session_state.analysis_result = None
@@ -117,7 +116,6 @@ if analyze_btn or st.session_state.analysis_result is not None:
             st.session_state.analysis_result = find_similar_loans(application_data, k=10)
             st.session_state.application_data = application_data
 
-    # Always read from session state
     result = st.session_state.analysis_result
     application_data = st.session_state.application_data
 
@@ -164,24 +162,35 @@ if analyze_btn or st.session_state.analysis_result is not None:
     # ===============================
     col_chart, col_table = st.columns(2)
 
+    # ---- FIXED PIE CHART LOGIC ----
     with col_chart:
         st.subheader("Outcome Distribution")
+
+        outcome_counts = {"Repaid": 0, "Defaulted": 0, "In Progress": 0}
+
+        for case in result["cases"]:
+            outcome = case.get("loan_outcome")
+            if outcome == "Repaid":
+                outcome_counts["Repaid"] += 1
+            elif outcome == "Defaulted":
+                outcome_counts["Defaulted"] += 1
+            else:
+                outcome_counts["In Progress"] += 1
+
         outcome_df = pd.DataFrame({
-            "Outcome": ["Repaid", "Defaulted", "In Progress"],
-            "Percentage": [
-                repaid_pct,
-                defaulted_pct,
-                result["in_progress_pct"]
-            ]
+            "Outcome": list(outcome_counts.keys()),
+            "Count": list(outcome_counts.values())
         })
 
         fig = px.pie(
             outcome_df,
-            values="Percentage",
+            values="Count",
             names="Outcome",
             hole=0.4,
             color_discrete_sequence=px.colors.sequential.RdBu
         )
+
+        fig.update_traces(textinfo="percent+label")
 
         st.plotly_chart(fig, use_container_width=True)
 
