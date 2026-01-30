@@ -205,10 +205,16 @@ To reduce outcome bias:
 
 ### Installation
 ```bash
+# Windows
 python -m venv qdrant_env
-qdrant_env\Scripts\activate    # Windows
-source qdrant_env/bin/activate # macOS/Linux
+qdrant_env\Scripts\activate    
+pip install -r requirements.txt
+```
 
+```bash
+# Linux/MacOS
+python3 -m venv qdrant_env
+source qdrant_env/bin/activate
 pip install -r requirements.txt
 ```
 
