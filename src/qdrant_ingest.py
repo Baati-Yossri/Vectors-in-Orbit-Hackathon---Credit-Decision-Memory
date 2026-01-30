@@ -16,7 +16,6 @@ if not QDRANT_URL or not QDRANT_API_KEY:
     raise ValueError("Missing QDRANT_URL or QDRANT_API_KEY in .env")
 
 
-
 # ===============================
 # CONFIG
 # ===============================

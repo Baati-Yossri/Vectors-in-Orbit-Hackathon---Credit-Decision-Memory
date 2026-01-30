@@ -136,3 +136,6 @@ else:
 
 print("\n🧠 Insight for banker:")
 print(insight)
+
+
+

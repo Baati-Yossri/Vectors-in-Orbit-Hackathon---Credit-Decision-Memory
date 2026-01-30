@@ -43,6 +43,7 @@ preprocessor = ColumnTransformer(
 # ===============================
 # BUILD VECTORS
 # ===============================
+
 vectors = preprocessor.fit_transform(df)
 
 # Convert to dense array (required for Qdrant)
